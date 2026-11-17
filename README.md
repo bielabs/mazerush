@@ -40,6 +40,12 @@ O paradigma funcional será aplicado na manipulação das coleções de objetos,
 
 A rodada será encerrada quando o temporizador atingir zero. O jogo apresentará a quantidade total de itens coletados e permitirá que o jogador inicie uma nova partida.
 
+## 7. Estrutura do código
+
+- `main.c` abre a janela e chama a atualização e o desenho a cada quadro.
+- `game.h` e `game.c` definem o estado do jogo e separam a atualização do desenho. `Game` guarda o jogador, até cinco coletáveis, a pontuação e o tempo acumulado da tela de teste. O estado inicial é `MENU`. Os estados `PLAYING` e `GAME_OVER` ficam disponíveis para o controle da rodada.
+- `player.h` define a área de colisão e a velocidade do jogador. `collectible.h` define a área de colisão do item e indica se ele está ativo.
+
 ## Equipe
 - Gabriel Araujo
 - Heitor Torres
