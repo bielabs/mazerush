@@ -2,6 +2,7 @@ CC     = gcc
 CFLAGS = -Wall -std=c99
 TARGET = mazerush
 SRC    = $(wildcard src/*.c)
+HEADERS = $(wildcard src/*.h)
 
 ifeq ($(OS),Windows_NT)
     RAYLIB ?= C:/raylib/w64devkit
@@ -18,7 +19,7 @@ endif
 
 all: $(TARGET)$(EXT)
 
-$(TARGET)$(EXT): $(SRC)
+$(TARGET)$(EXT): $(SRC) $(HEADERS)
 	$(CC) $(SRC) -o $(TARGET)$(EXT) $(CFLAGS) $(LDLIBS)
 
 run: all
