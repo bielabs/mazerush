@@ -9,4 +9,6 @@ typedef struct
     float speed;
 } Player;
 
+Player PlayerInit(Rectangle bounds, float speed);
+
 #endif
