@@ -9,4 +9,6 @@ typedef struct
     bool active;
 } Collectible;
 
+Collectible CollectibleInit(Rectangle bounds, bool active);
+
 #endif

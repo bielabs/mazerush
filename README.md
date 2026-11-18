@@ -43,8 +43,9 @@ A rodada será encerrada quando o temporizador atingir zero. O jogo apresentará
 ## 7. Estrutura do código
 
 - `main.c` abre a janela e chama a atualização e o desenho a cada quadro.
-- `game.h` e `game.c` definem o estado do jogo e separam a atualização do desenho. `Game` guarda o jogador, até cinco coletáveis, a pontuação e o tempo acumulado da tela de teste. O estado inicial é `MENU`. Os estados `PLAYING` e `GAME_OVER` ficam disponíveis para o controle da rodada.
-- `player.h` define a área de colisão e a velocidade do jogador. `collectible.h` define a área de colisão do item e indica se ele está ativo.
+- `game.h` e `game.c` definem `Game`, os estados da partida e o limite de cinco coletáveis. Também inicializam o estado geral e separam atualização e desenho.
+- `player.h` e `player.c` definem `Player` e sua função de inicialização, incluindo área de colisão e velocidade.
+- `collectible.h` e `collectible.c` definem `Collectible` e sua função de inicialização, incluindo área de colisão e estado ativo.
 
 ## Equipe
 - Gabriel Araujo
