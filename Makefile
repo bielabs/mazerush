@@ -1,5 +1,5 @@
 CC     = gcc
-CFLAGS = -Wall -std=c99
+CFLAGS = -Wall -std=c99 -Isrc
 TARGET = mazerush
 SRC    = $(wildcard src/*.c)
 HEADERS = $(wildcard src/*.h)
@@ -25,11 +25,17 @@ $(TARGET)$(EXT): $(SRC) $(HEADERS)
 run: all
 	./$(TARGET)$(EXT)
 
+# Testa a logica pura (logic.c e collectible.c) sem abrir janela.
+test: tests/test_logic.c src/logic.c src/collectible.c $(HEADERS)
+	$(CC) tests/test_logic.c src/logic.c src/collectible.c -o test_logic$(EXT) $(CFLAGS) -lm
+	./test_logic$(EXT)
+
 clean:
 ifeq ($(OS),Windows_NT)
 	cmd /C "if exist $(TARGET).exe del /q $(TARGET).exe"
+	cmd /C "if exist test_logic.exe del /q test_logic.exe"
 else
-	rm -f $(TARGET) $(TARGET).exe
+	rm -f $(TARGET) $(TARGET).exe test_logic test_logic.exe
 endif
 
-.PHONY: all run clean
+.PHONY: all run test clean

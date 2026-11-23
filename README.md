@@ -1,51 +1,79 @@
 # MazeRush
 
+Jogo 2D em C com Raylib, desenvolvido para o Projeto Integrador de Programação Imperativa e Funcional (CESAR School, 2026.2).
+
 ## 1. Descrição do jogo
 
-O Maze Rush é um jogo 2D desenvolvido em linguagem C utilizando a biblioteca Raylib. O objetivo é controlar um personagem dentro de um labirinto e coletar o maior número possível de itens durante 45 segundos.
+Você controla um personagem em um labirinto, coleta moedas e foge de fantasmas que perseguem o jogador. O labirinto é fixo; as moedas aparecem em posições aleatórias válidas.
 
-O jogador deverá explorar os caminhos disponíveis, evitando as paredes e procurando os itens espalhados pelo mapa.
+## 2. Modos de jogo
 
-## 2. Objetivo
+| Modo | Como funciona | Fim de jogo |
+|---|---|---|
+| **Ondas** | Colete a meta de moedas da onda (5 na primeira, +2 a cada onda). Ao completar, a onda sobe: mais fantasmas e mais velocidade. | Quando as vidas chegam a zero. |
+| **Tempo** | Rodada de 45 segundos com 4 fantasmas. Colete o máximo possível. | Quando o tempo chega a zero ou as vidas acabam. |
 
-Coletar o máximo de itens possível antes que o tempo da rodada termine, buscando melhorar a própria pontuação a cada nova tentativa.
+## 3. Regras
 
-## 3. Objetos do jogo
+1. O jogador começa com 3 vidas.
+2. Cada moeda coletada vale 1 ponto. Sempre há 5 moedas no mapa; ao coletar uma, outra surge em outra posição.
+3. As paredes bloqueiam o jogador e os fantasmas.
+4. Tocar em um fantasma tira uma vida, dá 4 s de invencibilidade (o personagem pisca) e todos os fantasmas voltam para a posição de ~6 s antes.
+5. Ao fim da partida são mostrados o total de moedas (e a onda alcançada, no modo Ondas), e o jogador pode voltar ao menu e jogar de novo quantas vezes quiser.
 
-- **Jogador:** personagem controlado pelo usuário.
-- **Labirinto:** mapa fixo composto por paredes e corredores.
-- **Itens coletáveis:** moedas ou objetos que aparecem em posições aleatórias e podem ser coletados pelo jogador.
-- **Temporizador:** controla os 45 segundos de cada rodada.
-- **Contador:** registra a quantidade de itens coletados.
+## 4. Controles
 
-## 4. Regras
+| Tecla / ação | Efeito |
+|---|---|
+| `W A S D` ou setas | Mover |
+| `↑ ↓` / `W S` no menu, ou mouse | Escolher modo |
+| `Enter` / `Espaço` / clique | Iniciar partida |
+| `Esc` (durante o jogo) | Voltar ao menu |
+| `Enter` (tela final) | Voltar ao menu |
 
-1. Cada rodada terá duração de 45 segundos.
-2. O jogador poderá se movimentar utilizando as teclas WASD ou as setas do teclado.
-3. As paredes impedirão a passagem do personagem.
-4. O labirinto permanecerá igual em todas as rodadas.
-5. Os itens aparecerão em posições aleatórias válidas a cada nova rodada.
-6. Ao coletar um item, outro aparecerá em uma posição diferente do mapa.
-7. Cada item coletado aumentará a pontuação em uma unidade.
-8. Quando o temporizador chegar a zero, a rodada será encerrada e o resultado será apresentado.
-9. O jogador poderá iniciar novas rodadas ilimitadamente.
+## 5. Como compilar e executar
 
-## 5. Aplicação dos paradigmas
+Pré-requisitos: `gcc`, `make` e a [Raylib](https://www.raylib.com/) instalada.
 
-O paradigma imperativo será utilizado na estrutura principal do jogo, incluindo o game loop, controle do personagem, leitura de entradas e renderização dos elementos.
+**Linux** (Raylib instalada no sistema, com `libGL` e X11):
 
-O paradigma funcional será aplicado na manipulação das coleções de objetos, utilizando os padrões map, filter e fold, além da separação das regras em funções puras sempre que possível.
+```sh
+make        # compila
+make run    # compila e executa
+make test   # testes da lógica pura (não abre janela)
+make clean
+```
 
-## 6. Condição de encerramento
+**macOS**: instale com `brew install raylib` e use os mesmos comandos.
 
-A rodada será encerrada quando o temporizador atingir zero. O jogo apresentará a quantidade total de itens coletados e permitirá que o jogador inicie uma nova partida.
+**Windows**: instale o pacote Raylib com w64devkit (padrão `C:/raylib/w64devkit`). Se estiver em outro lugar, use `make RAYLIB=D:/caminho/raylib/w64devkit`.
+
+## 6. Aplicação dos paradigmas
+
+**Imperativo.** O `main.c` contém só o game loop (`GameUpdate` → `GameDraw` a cada quadro, com `GetFrameTime()`). O estado fica no struct `Game`; a entrada de teclado e o desenho ficam isolados.
+
+**Funcional.** A lógica sobre coleções e as regras estão em funções puras, que podem ser testadas sem a janela (`tests/test_logic.c`):
+
+| Padrão | Onde |
+|---|---|
+| **map** | `EnemiesUpdate`, `EnemiesRewind` (`enemy.c`): aplicam a mesma transformação a cada inimigo. `CollectibleTryCollect` aplicada a todas as moedas em `CollectiblesCollectAt` (`collectible.c`). |
+| **filter** | `CollectiblesFilterActive` (`collectible.c`): compacta mantendo só as moedas ativas. |
+| **fold** | `CollectiblesCountActive`, `CollectiblesHasAt` (`collectible.c`); `EnemiesHitPlayer`, `EnemiesCountActive` (`enemy.c`); acumulador de pontuação em `CollectiblesCollectAt`. |
+| **Funções puras** | `logic.c` (`NextPosition`, `EnemyCountFor`, `EnemySpeedFor`, `ItemsTargetFor`, `WaveCompleted`, `TimeAfter`, `IsRoundOver`, `ScoreAfter`) e `PlayerMove`, `PlayerTick`, `PlayerHit`, `EnemyStep`, `EnemyRewind`, que recebem uma struct e devolvem uma nova. |
+
+Os efeitos (teclado, desenho, números aleatórios) ficam em camadas separadas: `PlayerReadInput`, `GameDraw`, `GameStart`/`RefillCollectibles`.
 
 ## 7. Estrutura do código
 
-- `main.c` abre a janela e chama a atualização e o desenho a cada quadro.
-- `game.h` e `game.c` definem `Game`, os estados da partida e o limite de cinco coletáveis. Também inicializam o estado geral e separam atualização e desenho.
-- `player.h` e `player.c` definem `Player` e sua função de inicialização, incluindo área de colisão e velocidade.
-- `collectible.h` e `collectible.c` definem `Collectible` e sua função de inicialização, incluindo área de colisão e estado ativo.
+- `main.c`: abre a janela e roda o game loop.
+- `config.h`: constantes (tela, mapa, limites) e enums `GameState` e `GameMode`.
+- `game.h` / `game.c`: struct `Game`, máquina de estados (menu / jogo / fim), regras da partida, HUD e telas.
+- `map.h` / `map.c`: matriz do labirinto, colisão com paredes e desenho.
+- `player.h` / `player.c`: jogador (movimento, invencibilidade, desenho).
+- `enemy.h` / `enemy.c`: fantasmas (IA em grade, histórico de posições) e operações sobre o vetor.
+- `collectible.h` / `collectible.c`: moedas e operações map/filter/fold sobre o vetor.
+- `logic.h` / `logic.c`: regras do jogo em funções puras.
+- `tests/test_logic.c`: testes da lógica pura.
 
 ## Equipe
 - Gabriel Araujo

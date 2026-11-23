@@ -2,28 +2,38 @@
 #define GAME_H
 
 #include "collectible.h"
+#include "config.h"
+#include "enemy.h"
 #include "player.h"
-
-#define MAX_COLLECTIBLES 5
-
-typedef enum
-{
-    MENU,
-    PLAYING,
-    GAME_OVER
-} GameState;
 
 typedef struct
 {
     GameState state;
+    GameMode mode;
+    int screenWidth;
+    int screenHeight;
+
     Player player;
+    Enemy enemies[MAX_ENEMIES];
     Collectible collectibles[MAX_COLLECTIBLES];
+    int collectibleCount;
+
     int score;
-    float elapsed;
+    int lives;
+    int wave;
+    int waveItems;
+    int itemsTarget;
+    float timeLeft;
+
+    Camera2D camera;
 } Game;
 
-Game GameInit(void);
+Game GameInit(int screenWidth, int screenHeight);
+
+/* Atualiza o estado. Nunca desenha. */
 void GameUpdate(Game *game, float dt);
-void GameDraw(const Game *game, float dt);
+
+/* Desenha o estado. Nunca o altera. */
+void GameDraw(const Game *game);
 
 #endif

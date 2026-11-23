@@ -1,23 +1,21 @@
 #include "game.h"
-
-#define SCREEN_WIDTH  800
-#define SCREEN_HEIGHT 600
-#define TARGET_FPS    60
+#include <time.h>
 
 int main(void)
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Maze Rush");
     SetTargetFPS(TARGET_FPS);
+    SetExitKey(KEY_NULL); /* ESC volta ao menu em vez de fechar a janela */
+    SetRandomSeed((unsigned int)time(NULL));
 
-    Game game = GameInit();
+    Game game = GameInit(SCREEN_WIDTH, SCREEN_HEIGHT);
 
     while (!WindowShouldClose())
     {
-        float dt = GetFrameTime();
-        GameUpdate(&game, dt);
+        GameUpdate(&game, GetFrameTime());
 
         BeginDrawing();
-        GameDraw(&game, dt);
+        GameDraw(&game);
         EndDrawing();
     }
 
